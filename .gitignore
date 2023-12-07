@@ -252,3 +252,5 @@ paket-files/
 *.sln.iml
 /src/WebUI/__LogFilePath__log-20220510.txt
 /src/WebUI/__LogFilePath__log-20220511.txt
+
+CompanyEmployees/internal_logs/internallog.txt

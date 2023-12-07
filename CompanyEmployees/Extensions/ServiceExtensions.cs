@@ -12,9 +12,10 @@ public static class ServiceExtensions
     public static void configureCors(this IServiceCollection services) => services.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy", builder =>
-            builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("X-Pagination")); // Enable the client to read the new X-Pagination header
     });
 
     // For hosting on IIS
