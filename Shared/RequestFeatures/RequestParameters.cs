@@ -4,7 +4,6 @@ public abstract class RequestParameters
 {
     const int maxPageSize = 50;
     public int pageNumber { get; set; } = 1;
-
     private int _pageSize = 10;
     public int PageSize
     {
@@ -17,6 +16,6 @@ public abstract class RequestParameters
             _pageSize = (value > maxPageSize) ? maxPageSize : value;
         }
     }
-
     public string? OrderBy { get; set; }
+    public string? Fields { get; set; }
 }
