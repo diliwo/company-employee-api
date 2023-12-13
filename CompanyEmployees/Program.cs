@@ -1,5 +1,6 @@
 using CompanyEmployees.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
+using CompanyEmployees.Utility;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -30,14 +31,15 @@ builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureServiceNpgsqlContext(builder.Configuration);
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
-
-
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<ApiBehaviorOptions>(options => // For removing the default model state validation
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 builder.Services.AddScoped<ValidationFilterAttribute>(); // Action filter for validation
+builder.Services.AddScoped<ValidateMediaTypeAttribute>(); // Actionfilter for mediaType validation for HATEOS
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>(); // For links generating
+
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true; // To support XML formaters
@@ -46,7 +48,7 @@ builder.Services.AddControllers(config =>
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
-
+builder.Services.AddCustomMediaTypes();
 
 var app = builder.Build();
 

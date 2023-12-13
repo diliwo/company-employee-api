@@ -1,4 +1,6 @@
 ﻿using System.Text.Json;
+using CompanyEmployees.Presentation.ActionFilters;
+using Entities.LinkModels;
 using Entities.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +18,19 @@ public class EmployeesController : ControllerBase
     public EmployeesController(IServiceManager service) => _service = service;
 
     [HttpGet]
+    [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetEmployeesForCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
     {
-        var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false);
+        var linkParams = new LinkParameters(employeeParameters, HttpContext);
 
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+        //var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId, linkParams, trackChanges: false);
+        var result = await _service.EmployeeService.GetEmployeesAsync(companyId, linkParams, trackChanges: false);
 
-        return Ok(pagedResult.employees);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
+
+        return result.linkResponse.HasLink ? 
+            Ok(result.linkResponse.LinkedEntities) :
+            Ok(result.linkResponse.ShapedEntities);
     }
 
     [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]
