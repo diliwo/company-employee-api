@@ -1,11 +1,15 @@
-﻿using Contracts;
+﻿using AspNetCoreRateLimit;
+using Contracts;
 using LoggerService;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Service;
 using Service.Contracts;
+using System;
 
 namespace CompanyEmployees.Extensions;
 
@@ -50,6 +54,7 @@ public static class ServiceExtensions
     public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder) =>
         builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutPutFormatter()));
 
+    // For MediaType
     public static void AddCustomMediaTypes(this IServiceCollection services)
     {
         services.Configure<MvcOptions>(config =>
@@ -80,5 +85,55 @@ public static class ServiceExtensions
                     .Add("application/vnd.codemaze.apiroot+xml");
             }
         });
+    }
+
+    // For Versioning
+    public static void ConfigureVersioning(this IServiceCollection services)
+    {
+        services.AddApiVersioning(opt =>
+        {
+            opt.ReportApiVersions = true; // Adds the API version to the response header.
+            opt.AssumeDefaultVersionWhenUnspecified = true; // Specifies the default API version if the client doesn't send one. 
+            opt.DefaultApiVersion = new ApiVersion(1, 0); //sets the default version count.
+            opt.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+        });
+    }
+
+    // For native Caching
+    public static void ConfigureResponseCaching(this IServiceCollection services) => services.AddResponseCaching();
+
+    // For caching with marvin
+    public static void ConfigureHttpCacheHeaders(this IServiceCollection services) => services.AddHttpCacheHeaders(
+        (expirationOpt) =>
+        {
+            expirationOpt.MaxAge = 65; // Set Age to 65 seconds
+            expirationOpt.CacheLocation = CacheLocation.Private; // Set to private cache
+        },
+        (validationOpt) =>
+        {
+            validationOpt.MustRevalidate = true;
+        });
+
+    public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+    {
+        // Create a rate limit rules
+        var rateLimitRules = new List<RateLimitRule>
+        {
+            new RateLimitRule
+            {
+                Endpoint = "*", // For any endpoints
+                Limit = 3, // we stating that 3 requests are allowed
+                Period = "5m" // in 5 minutes period
+            }
+        };
+
+        
+        services.Configure<IpRateLimitOptions>(opt => { opt.GeneralRules = rateLimitRules; }); // configure with the rules above
+        
+        // Serve the purpose of storing rate limit counters and policies as well as adding configuration.
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
     }
 }

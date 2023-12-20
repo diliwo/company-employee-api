@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using CompanyEmployees.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Utility;
@@ -39,16 +40,23 @@ builder.Services.Configure<ApiBehaviorOptions>(options => // For removing the de
 builder.Services.AddScoped<ValidationFilterAttribute>(); // Action filter for validation
 builder.Services.AddScoped<ValidateMediaTypeAttribute>(); // Actionfilter for mediaType validation for HATEOS
 builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>(); // For links generating
+builder.Services.ConfigureResponseCaching(); // For native caching
+builder.Services.ConfigureHttpCacheHeaders(); // For cashing with marvin 
 
 builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true; // To support XML formaters
         config.ReturnHttpNotAcceptable = true; // To handle unsupported format
         config.InputFormatters.Insert(0, GetJsonPatchInputFormatter()); //We place the JsonPatchInputFormatter at the index 0
+        config.CacheProfiles.Add("120SecondsDuration", new CacheProfile(){ Duration = 120}); //
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 builder.Services.AddCustomMediaTypes();
+builder.Services.ConfigureVersioning(); // For versioning management***
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimitingOptions();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -62,7 +70,10 @@ if(app.Environment.IsProduction())
 app.UseHttpsRedirection(); // redirection from HTTP to HTTPS
 app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions() { ForwardedHeaders = ForwardedHeaders.All }); // Forward proxy hearders to the current headers
+app.UseIpRateLimiting(); // For the rate limiting
 app.UseCors("CorsPolicy");
+app.UseResponseCaching(); // For native caching
+app.UseHttpCacheHeaders(); // For caching with marvin
 app.UseAuthorization();
 app.MapControllers(); //Add endpoints
 
