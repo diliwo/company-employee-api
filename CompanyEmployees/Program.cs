@@ -1,8 +1,11 @@
+using Application.Commons.Behaviors;
 using AspNetCoreRateLimit;
 using CompanyEmployees.Extensions;
 using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Utility;
 using Contracts;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -11,12 +14,18 @@ using Microsoft.Extensions.Options;
 using NLog;
 using Service.DataShaping;
 using Shared.DataTransferObjects;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add log
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
-
+// Mediator
+builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
+// Mediator validator
+builder.Services.AddValidatorsFromAssembly(typeof(Application.AssemblyReference).Assembly);
+// Mediator Behaviour
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 // Configure support for JSON Patch using NewtonSoft.Json while leaving the other formatters unchanged(e.g System.Text.Json)
 NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
     new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
@@ -31,7 +40,7 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureServiceNpgsqlContext(builder.Configuration);
-builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>(); // For Data shap
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<ApiBehaviorOptions>(options => // For removing the default model state validation
 {

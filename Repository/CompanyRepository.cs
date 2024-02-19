@@ -10,12 +10,12 @@ public class CompanyRepository : RepositoryBase<Company>, ICompanyRepository
     {
     }
 
-    public IEnumerable<Company> getAllCompanies(bool trackChanges) =>
+    public IEnumerable<Company> GetAllCompanies(bool trackChanges) =>
         FindAll(trackChanges)
             .OrderBy(c => c.Name)
             .ToList();
 
-    public async Task<IEnumerable<Company>> getAllCompaniesAsync(bool trackChanges) =>
+    public async Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges) =>
         await FindAll(trackChanges)
             .OrderBy(c => c.Name)
             .ToListAsync();

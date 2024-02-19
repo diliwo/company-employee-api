@@ -4,8 +4,8 @@ namespace Contracts;
 
 public interface ICompanyRepository
 {
-    IEnumerable<Company> getAllCompanies(bool trackChanges);
-    Task<IEnumerable<Company>> getAllCompaniesAsync(bool trackChanges);
+    IEnumerable<Company> GetAllCompanies(bool trackChanges);
+    Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges);
     Company GetCompany(Guid companyId, bool trackChanges);
     Task<Company> GetCompanyAsync(Guid companyId, bool trackChanges);
     IEnumerable<Company> GetByIds(IEnumerable<Guid> ids, bool trackChanges);

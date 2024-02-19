@@ -122,7 +122,7 @@ public static class ServiceExtensions
             new RateLimitRule
             {
                 Endpoint = "*", // For any endpoints
-                Limit = 3, // we stating that 3 requests are allowed
+                Limit = 10, // we stating that 3 requests are allowed
                 Period = "5m" // in 5 minutes period
             }
         };

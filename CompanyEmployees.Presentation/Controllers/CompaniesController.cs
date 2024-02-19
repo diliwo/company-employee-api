@@ -8,7 +8,7 @@ using Shared.DataTransferObjects;
 
 namespace CompanyEmployees.Presentation.Controllers
 {
-    [ApiVersion("1.0")]
+    [ApiVersion("1.0", Deprecated = true)]
     [Route("api/companies")]
     [ApiController]
     //[ResponseCache(CacheProfileName = "120SecondsDuration")] // For native cache, removing when using marvin.Cache.Headers

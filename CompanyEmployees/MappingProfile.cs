@@ -4,6 +4,9 @@ using Shared.DataTransferObjects;
 
 namespace CompanyEmployees;
 
+/**
+ * For automapper
+ */
 public class MappingProfile : Profile
 {
     public MappingProfile()
