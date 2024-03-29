@@ -1,4 +1,5 @@
 ﻿using Application.Company.Queries;
+using Application.Employee.Commons;
 using Application.Employee.Queries;
 using AutoMapper;
 using Contracts;
@@ -9,16 +10,10 @@ using Shared.DataTransferObjects;
 
 namespace Application.Employee.Handlers;
 
-internal sealed class GetEmployeesHandler : IRequestHandler<GetEmployeesQuery, IEnumerable<EmployeeDto>>
+internal sealed class GetEmployeesHandler : EmployeesTools, IRequestHandler<GetEmployeesQuery, IEnumerable<EmployeeDto>>
 {
-    private readonly IRepositoryManager _repository;
-    private readonly IMapper _mapper;
 
-    public GetEmployeesHandler(IRepositoryManager repository, IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
+    public GetEmployeesHandler(IRepositoryManager repository, IMapper mapper) : base(repository, mapper) {}
 
     public async Task<IEnumerable<EmployeeDto>> Handle(GetEmployeesQuery request, CancellationToken cancellationToken)
     {
@@ -37,14 +32,5 @@ internal sealed class GetEmployeesHandler : IRequestHandler<GetEmployeesQuery, I
         var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaDatab);
 
         return employeesDto;
-    }
-
-    private async Task CheckIfCompanyExists(Guid companyId, bool trackChanges)
-    {
-        var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
-        if (company is null)
-        {
-            throw new CompanyNotFoundException(companyId);
-        }
     }
 }

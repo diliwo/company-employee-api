@@ -1,3 +1,3 @@
 ﻿namespace Shared.DataTransferObjects;
 
-public record EmployeeDto(Guid Id, string Name, int Age, string Position);
+public record EmployeeDto(Guid Id, string Firstname,string Lastname, int Age, string Position);

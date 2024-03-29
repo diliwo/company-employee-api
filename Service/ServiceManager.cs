@@ -5,6 +5,9 @@ using Shared.DataTransferObjects;
 
 namespace Service;
 
+/**
+ * Deprecatated because of the CQRS Approach
+ */
 public sealed class ServiceManager : IServiceManager
 {
     private readonly Lazy<ICompanyService> _companyService;

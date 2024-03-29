@@ -3,6 +3,9 @@ using Shared.DataTransferObjects;
 
 namespace Service.Contracts;
 
+/**
+ * Deprecatated because of the CQRS Approach
+ */
 public interface ICompanyService
 {
     Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(bool trackChanges);

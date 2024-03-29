@@ -8,6 +8,9 @@ using System.ComponentModel.Design;
 
 namespace Service
 {
+    /**
+     * Deprecatated because of the CQRS Approach
+     */
     internal sealed class CompanyService : ICompanyService
     {
         private readonly IRepositoryManager _repository;

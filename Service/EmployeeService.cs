@@ -11,6 +11,9 @@ using Shared.RequestFeatures;
 
 namespace Service
 {
+    /**
+     * Deprecatated because of the CQRS Approach
+    */
     internal sealed class EmployeeService : IEmployeeService
     {
         private readonly IRepositoryManager _repository;

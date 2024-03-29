@@ -21,7 +21,7 @@ public static class RepositoryEmployeeExtensions
 
         var lowerCaseTerm = searchTerm.Trim().ToLower();
 
-        return employees.Where(e => e.Name.ToLower().Contains(lowerCaseTerm));
+        return employees.Where(e => e.Firstname.ToLower().Contains(lowerCaseTerm));
     }
 
     
@@ -29,7 +29,7 @@ public static class RepositoryEmployeeExtensions
     {
         if (string.IsNullOrWhiteSpace(orderByQueryString))
         {
-            return employees.OrderBy(e => e.Name);
+            return employees.OrderBy(e => e.Firstname);
         }
 
         var orderQuery = OrderQueryBuilder.CreateOrderQuery<Employee>(orderByQueryString);
@@ -37,7 +37,7 @@ public static class RepositoryEmployeeExtensions
         // We do a last check to see if query has still something in it
         if (string.IsNullOrWhiteSpace(orderQuery))
         {
-            return employees.OrderBy(e => e.Name);
+            return employees.OrderBy(e => e.Firstname);
         }
 
         // Finally we order the query

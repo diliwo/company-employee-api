@@ -15,7 +15,7 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
 
     public IEnumerable<Employee> GetEmployees(Guid companyId, bool trackChanges) =>
         FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges)
-            .OrderBy(e => e.Name).ToList();
+            .OrderBy(e => e.Firstname).ToList();
 
     public async Task<PagedList<Employee>> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
     {

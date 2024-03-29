@@ -6,6 +6,9 @@ using Entities.LinkModels;
 
 namespace Service.Contracts
 {
+    /**
+    * Deprecatated because of the CQRS Approach
+    */
     public interface IEmployeeService
     {
         Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkParameters linkParameters, bool trackChanges);

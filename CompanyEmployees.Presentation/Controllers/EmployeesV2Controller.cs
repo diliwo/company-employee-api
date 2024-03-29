@@ -26,6 +26,7 @@ namespace CompanyEmployees.Presentation.Controllers
             _publisher = publisher;
         }
 
+        [HttpGet]
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
             var linkParams = new LinkParameters(employeeParameters, HttpContext);
@@ -33,6 +34,13 @@ namespace CompanyEmployees.Presentation.Controllers
             var companies = await _sender.Send(new GetEmployeesQuery(companyId, linkParams, trackChanges: false));
 
             return Ok(companies);
+        }
+
+        [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]
+        public async Task<IActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
+        {
+            var employee = await _sender.Send(new GetEmployeeQuery(companyId, id, trackChanges: false));
+            return Ok(employee);
         }
     }
 }
